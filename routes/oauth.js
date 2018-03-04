@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const userModel = require('../models/user');
 const utils = require('../utils/index');
+const redis = require('../redis/index');
 
 // 注册
 router.post('/register', (req, res, next) => {
@@ -22,7 +23,12 @@ router.post('/register', (req, res, next) => {
 
 // 登录
 router.post('/login', function (req, res, next) {
-  res.send('respond with a resource');
+  redis.getAsync('userKey').then(val => {
+    console.log('设置用户登录', val);
+  }).catch(err => {
+    console.log(err);
+  });
+  res.send('respond with a resource2');
 });
 
 // 更新用户信息
