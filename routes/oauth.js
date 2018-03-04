@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const userModel = require('../models/user');
 const utils = require('../utils/index');
-const redis = require('../redis/index');
+const redis = require('../db/redis');
 
 // 注册
 router.post('/register', (req, res, next) => {
