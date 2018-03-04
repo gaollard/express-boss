@@ -5,8 +5,11 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+var mongodb = require('./mongodb/index');
+
 var index = require('./routes/index');
 var users = require('./routes/users');
+var oauth = require('./routes/oauth');
 
 var app = express();
 
