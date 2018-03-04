@@ -1,13 +1,27 @@
 const express = require('express');
 const router = express.Router();
-
-// 登录
-router.post('/register', function(req, res, next) {
-  res.send('respond with a resource');
-});
+const userModel = require('../models/user');
+const utils = require('../utils/index');
 
 // 注册
-router.post('/login', function(req, res, next) {
+router.post('/register', (req, res, next) => {
+  let {mobile, nickname, pwd, type, avatar} = req.body;
+  pwd = utils.md5Encode(pwd);
+  userModel.register({
+    mobile,
+    nickname,
+    pwd,
+    type,
+    avatar
+  }).then(doc => {
+    res.json(doc);
+  }).catch(err => {
+    res.json(err);
+  })
+});
+
+// 登录
+router.post('/login', function (req, res, next) {
   res.send('respond with a resource');
 });
 
