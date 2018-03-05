@@ -22,14 +22,24 @@ router.post('/register', (req, res, next) => {
 });
 
 // 登录
-router.post('/login', function (req, res, next) {
-  redis.getAsync('userKey').then(val => {
-    console.log('设置用户登录', val);
-  }).catch(err => {
+router.post('/login',  (req, res, next) => {
+  try {
+    let { mobile, pwd } = req.body;
+    pwd = utils.md5Encode(pwd);
+    userModel.login(res, { mobile, pwd });
+  } catch (err) {
     console.log(err);
-  });
-  res.send('respond with a resource2');
+  }
 });
+
+router.get('/userInfo', (req, res, next) => {
+  try {
+    let { userkey } = req.body;
+    userModel.userInfo(res, { userkey });
+  } catch (err) {
+    console.log(err);
+  }
+})
 
 // 更新用户信息
 router.post('/update', (req, res, next) => {
