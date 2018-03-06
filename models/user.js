@@ -31,33 +31,19 @@ module.exports = {
   },
 
   // 登录
-  login(res, {mobile, pwd}) {
+  login({mobile, pwd}) {
     return new Promise((resolve, reject) => {
-      UserSchema.findOne({
+      UserSchema.find({
         mobile,
         pwd
       }, (err, doc) => {
-        if (doc) {
+        if(err) {
+          reject({code: '1', msg: '账户不存在或密码不正确', data: null})
+        } else {
           let randoms = utils.getRandoms(5);
           let userkey = `userkey_${mobile}_${randoms}`;
-          const {mobile, nickname, type, avatar} = doc;
-          redisHandle
-            .setAsync(userkey, mobile)
-            .then(() => {
-              res.json({
-                code: '0',
-                msg: '登录成功',
-                data: {
-                  userInfo: {mobile, nickname, type, avatar, userkey}
-                }
-              })
-            })
-            .catch(err => {
-              console.log(111);
-              console.log(err);
-            })
-        } else {
-          res.json({code: '1', msg: '账户不存在或密码不正确', data: null})
+          const {nickname, type, avatar} = doc[0];
+          resolve({mobile, nickname, type, avatar, userkey});
         }
       });
     })
