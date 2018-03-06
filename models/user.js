@@ -5,27 +5,26 @@ const utils = require('../utils/index');
 module.exports = {
 
   // 注册
-  register({mobile, nickname, pwd, type, avatar}) {
+  register({mobile, pwd, type}) {
+    let record = {}, userkey;
     return new Promise((resolve, reject) => {
-      UserSchema.find({
-        mobile
-      }, (err, doc) => {
-        if (err) {
-          reject({err});
+      UserSchema.find({mobile}).then(doc => {
+        if(doc.length) {
+          reject('该手机号码已经注册');
         } else {
-          if (doc.length) {
-            reject({code: '10001', err: '该手机号码已经注册', data: null});
-          } else {
-            const UserCreator = new UserSchema({mobile, nickname, type, pwd, avatar});
-            UserCreator.save((err, doc) => {
-              if (err) {
-                reject({err});
-              } else {
-                resolve({code: '0', msg: '', data: doc})
-              }
-            })
-          }
+          const UserCreator = new UserSchema({mobile, type, pwd});
+          return UserCreator.save();
         }
+      }).then(doc => {
+        console.log(doc);
+        record = doc;
+        userkey = utils.createUserkey(mobile);
+        return redisHandle.setAsync(userkey, mobile);
+      }).then(() => {
+        const {mobile, nickname, type, avatar} = record;
+        resolve({mobile, nickname, type, avatar, userkey});
+      }).catch(err => {
+        reject(err);
       });
     })
   },
@@ -33,37 +32,53 @@ module.exports = {
   // 登录
   login({mobile, pwd}) {
     return new Promise((resolve, reject) => {
-      UserSchema.find({
-        mobile,
-        pwd
-      }, (err, doc) => {
-        if(err) {
-          reject({code: '1', msg: '账户不存在或密码不正确', data: null})
-        } else {
-          let randoms = utils.getRandoms(5);
-          let userkey = `userkey_${mobile}_${randoms}`;
-          const {nickname, type, avatar} = doc[0];
-          resolve({mobile, nickname, type, avatar, userkey});
-        }
+      let result = {};
+      UserSchema.find({mobile, pwd}).then(doc => {
+        let userkey = utils.createUserkey(mobile);
+        const {nickname, type, avatar} = doc[0];
+        result = {mobile, nickname, type, avatar, userkey};
+        return redisHandle.setAsync(userkey, mobile);
+      }).then(() => {
+        resolve(result);
+      }).catch(err => {
+        reject('账户不存在或密码不正确')
       });
     })
   },
 
   // 获取用户信息
-  userInfo(res, {userkey}) {
-    redisHandle
-      .getAsync(userkey)
-      .then(data => {
-        res.json({
-          code: '0',
-          msg: '登录成功',
-          data: {
-            mobile: data
-          }
-        })
+  userInfo({userkey}) {
+    return new Promise((resolve, reject) => {
+      redisHandle.getAsync(userkey).then(mobile => {
+        return UserSchema.findOne({mobile})
+      }).then(data => {
+        const { mobile, nickname, type, avatar} = data;
+        resolve({mobile, nickname, type, avatar});
       })
       .catch(err => {
-        console.log(err);
+        reject(err);
       })
+    });
+  },
+
+  // 更新用户信息
+  update ({userkey, nickname, avatar}) {
+    return new Promise((resolve, reject) => {
+      redisHandle.getAsync(userkey).then(doc => {
+        if(doc) {
+          return UserSchema.update({mobile: doc}, {nickname, avatar});
+        } else {
+          reject('用户未登录')
+        }
+      }).then(res => {
+        if(res.n === 1) {
+          resolve();
+        } else {
+          reject('更新失败')
+        }
+      }).catch(err => {
+        reject(err);
+      })
+    })
   }
 };

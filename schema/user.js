@@ -3,8 +3,14 @@ const Schema = mongoose.Schema;
 const userSchema = {
   mobile: String,
   pwd: String,
-  avatar: String,
   type: String,
-  nickname: String
+  avatar: {
+    type: String,
+    default: ''
+  },
+  nickname: {
+    type: String,
+    default: ''
+  }
 };
 module.exports = mongoose.model('user', new mongoose.Schema(userSchema));
