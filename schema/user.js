@@ -11,6 +11,11 @@ const userSchema = {
   nickname: {
     type: String,
     default: ''
+  },
+  // genius职位
+  position: {
+    type: String,
+    default: ''
   }
 };
 module.exports = mongoose.model('user', new mongoose.Schema(userSchema));
