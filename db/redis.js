@@ -10,11 +10,16 @@ const client = redis.createClient({
 const getAsync = promisify(client.get).bind(client);
 const setAsync = promisify(client.set).bind(client);
 
+/**
+ * @email: 1056834607@qq.com
+ * @tpl redis链接错误发送邮件
+ */
 client.on("error", err => {
   console.log('redis_error--------------------start');
   console.log(err);
   console.log('redis_error--------------------end');
 });
+
 
 module.exports = {
   getAsync,

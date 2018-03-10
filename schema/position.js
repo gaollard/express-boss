@@ -43,4 +43,4 @@ const positionSchema = {
     default: []
   }
 };
-module.exports = mongoose.model('user', new mongoose.Schema(userSchema));
+module.exports = mongoose.model('position', new mongoose.Schema(positionSchema));

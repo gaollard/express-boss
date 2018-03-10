@@ -4,10 +4,12 @@ const userSchema = {
   mobile: String,
   pwd: String,
   type: String,
+  // 头像
   avatar: {
     type: String,
     default: ''
   },
+  // 昵称
   nickname: {
     type: String,
     default: ''
