@@ -12,6 +12,7 @@ var index = require('./routes/index');
 var users = require('./routes/users');
 var oauth = require('./routes/oauth');
 var upload = require('./routes/upload');
+var chat = require('./routes/chat');
 
 var app = express();
 
@@ -31,6 +32,7 @@ app.use('/', index);
 app.use('/oauth', oauth);
 app.use('/users', users);
 app.use('/upload', upload);
+app.use('/chat', chat);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

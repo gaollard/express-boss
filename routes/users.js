@@ -13,6 +13,19 @@ router.get('/boss', (req, res, next) => {
       }
     })
   })
-})
+});
+
+// 用户列表
+router.get('/genius', (req, res, next) => {
+  usersModel.users({ type: 'genius' }).then(doc => {
+    res.json({
+      msg: '',
+      code: '0',
+      data: {
+        list: doc
+      }
+    })
+  })
+});
 
 module.exports = router;

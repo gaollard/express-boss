@@ -16,13 +16,12 @@ module.exports = {
           return UserCreator.save();
         }
       }).then(doc => {
-        console.log(doc);
         record = doc;
         userkey = utils.createUserkey(mobile);
         return redisHandle.setAsync(userkey, mobile);
       }).then(() => {
-        const {mobile, nickname, type, avatar} = record;
-        resolve({mobile, nickname, type, avatar, userkey});
+        const {mobile, nickname, type, avatar, _id} = record;
+        resolve({mobile, nickname, type, avatar, userkey, _id});
       }).catch(err => {
         reject(err);
       });
@@ -35,8 +34,8 @@ module.exports = {
       let result = {};
       UserSchema.find({mobile, pwd}).then(doc => {
         let userkey = utils.createUserkey(mobile);
-        const {nickname, type, avatar} = doc[0];
-        result = {mobile, nickname, type, avatar, userkey};
+        const {nickname, type, avatar, _id} = doc[0];
+        result = {mobile, nickname, type, avatar, userkey, _id};
         return redisHandle.setAsync(userkey, mobile);
       }).then(() => {
         resolve(result);
