@@ -24,5 +24,4 @@ const companySchema = {
   }
 };
 
-companySchema.index({index: 1});
 module.exports = mongoose.model('company', new mongoose.Schema(companySchema));

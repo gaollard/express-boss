@@ -17,5 +17,8 @@
     "redis": "^2.8.0",
     "serve-favicon": "~2.4.5",
     "utility": "^1.13.1"
+  },
+  "devDependencies": {
+    "log4js": "^2.5.3"
   }
 }

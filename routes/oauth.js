@@ -11,11 +11,10 @@ const utils = require('../utils/index');
  */
 router.post('/register', (req, res) => {
   let {mobile, pwd, type} = req.body;
-  pwd = utils.md5Encode(pwd);
   userModel.register({
     mobile,
-    pwd,
     type,
+    pwd: utils.md5Encode(pwd)
   }).then(doc => {
     res.json({code: '0', msg: '', data: {userInfo: doc}});
   }).catch(err => {
@@ -30,12 +29,11 @@ router.post('/register', (req, res) => {
  */
 router.post('/login', async (req, res) => {
   let {mobile, pwd} = req.body;
-  try {
-    let ret = await userModel.login({mobile, pwd: utils.md5Encode(pwd)});
-    res.json({code: '0', msg: '登录成功', data: {userInfo: ret}});
-  } catch (err) {
+  userModel.login({mobile, pwd: utils.md5Encode(pwd)}).then(data => {
+    res.json({code: '0', msg: '登录成功', data: {userInfo: data}});
+  }).catch(err => {
     res.json({code: '1', msg: err, data: null});
-  }
+  });
 });
 
 /**
@@ -56,16 +54,11 @@ router.post('/userInfo', async (req, res) => {
 router.post('/update', async (req, res) => {
   try {
     let params = {};
-    let {nickname, avatar, userkey} = req.body;
-    if (nickname) {
-      params.nickname = nickname;
-    }
-    if (avatar) {
-      params.avatar = avatar;
-    }
-    if (userkey) {
-      params.userkey = userkey
-    }
+    let {mobile, nickname, avatar, userkey} = req.body;
+    if (nickname) params.nickname = nickname;
+    if (avatar) params.avatar = avatar;
+    if (userkey) params.userkey = userkey;
+    if (mobile) params.mobile = mobile;
     let ret = await userModel.update(params);
     res.json({
       code: '0',
@@ -75,7 +68,7 @@ router.post('/update', async (req, res) => {
   } catch (err) {
     res.json({
       code: '1',
-      msg: errr,
+      msg: err,
       data: null
     })
   }

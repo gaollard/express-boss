@@ -40,7 +40,7 @@ module.exports = {
       }).then(() => {
         resolve(result);
       }).catch(err => {
-        reject('账户不存在或密码不正确')
+        reject(err)
       });
     })
   },
@@ -61,11 +61,11 @@ module.exports = {
   },
 
   // 更新用户信息
-  update ({userkey, nickname, avatar}) {
+  update ({userkey, nickname, avatar, mobile}) {
     return new Promise((resolve, reject) => {
       redisHandle.getAsync(userkey).then(doc => {
         if(doc) {
-          return UserSchema.update({mobile: doc}, {nickname, avatar});
+          return UserSchema.update({mobile: doc}, {nickname, avatar, mobile});
         } else {
           reject('用户未登录')
         }

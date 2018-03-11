@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 // 聊天信息表
-const chatSchma = {
+const chatSchema = {
   // 聊天id
   chatId: {
     type: String,
@@ -21,8 +21,7 @@ const chatSchma = {
   // 内容
   content: {
     type: String,
-    require: true,
-    default: ''
+    require: true
   },
   // 接收人是否阅读
   read: {
@@ -34,7 +33,6 @@ const chatSchma = {
     type: Number,
     default: new Date().getTime()
   }
-}
+};
 
-chatSchma.index({ index: 1})
-module.exports = mongoose.model('chat', new mongoose.Schema(chatSchma));
+module.exports = mongoose.model('chat', new Schema(chatSchema));
