@@ -1,6 +1,7 @@
 const UserSchema = require('../schema/user');
 const redisHandle = require('../db/redis');
 const utils = require('../utils/index');
+// const loginLog = require('../log').getLogger('login');
 
 module.exports = {
 
@@ -9,7 +10,7 @@ module.exports = {
     let record = {}, userkey;
     return new Promise((resolve, reject) => {
       UserSchema.find({mobile}).then(doc => {
-        if(doc.length) {
+        if (doc.length) {
           reject('该手机号码已经注册');
         } else {
           const UserCreator = new UserSchema({mobile, type, pwd});
@@ -33,14 +34,21 @@ module.exports = {
     return new Promise((resolve, reject) => {
       let result = {};
       UserSchema.find({mobile, pwd}).then(doc => {
-        let userkey = utils.createUserkey(mobile);
-        const {nickname, type, avatar, _id} = doc[0];
-        result = {mobile, nickname, type, avatar, userkey, _id};
-        return redisHandle.setAsync(userkey, mobile);
+        if (doc.length) {
+          let userkey = utils.createUserkey(mobile);
+          const {nickname, type, avatar, _id} = doc[0];
+          result = {mobile, nickname, type, avatar, userkey, _id};
+          return redisHandle.setAsync(userkey, mobile);
+        } else {
+          reject({errMsg: '用户未登录', errType: 'user_not_register'})
+        }
       }).then(() => {
         resolve(result);
       }).catch(err => {
-        reject(err)
+        reject({
+          errMsg: err,
+          errType: 'unkown_err',
+        })
       });
     })
   },
@@ -51,26 +59,26 @@ module.exports = {
       redisHandle.getAsync(userkey).then(mobile => {
         return UserSchema.findOne({mobile})
       }).then(data => {
-        const { mobile, nickname, type, avatar} = data;
+        const {mobile, nickname, type, avatar} = data;
         resolve({mobile, nickname, type, avatar});
       })
-      .catch(err => {
-        reject(err);
-      })
+        .catch(err => {
+          reject(err);
+        })
     });
   },
 
   // 更新用户信息
-  update ({userkey, nickname, avatar, mobile}) {
+  update({userkey, nickname, avatar, mobile}) {
     return new Promise((resolve, reject) => {
       redisHandle.getAsync(userkey).then(doc => {
-        if(doc) {
+        if (doc) {
           return UserSchema.update({mobile: doc}, {nickname, avatar, mobile});
         } else {
           reject('用户未登录')
         }
       }).then(res => {
-        if(res.n === 1) {
+        if (res.n === 1) {
           resolve();
         } else {
           reject('更新失败')
@@ -79,5 +87,5 @@ module.exports = {
         reject(err);
       })
     })
-  }
+  },
 };

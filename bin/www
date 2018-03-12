@@ -5,10 +5,6 @@ var debug = require('debug')('express-boss:server');
 var http = require('http');
 var chatSchema = require('../schema/chat');
 
-var log4js = require('log4js');
-var logger = log4js.getLogger();
-logger.level = 'debug';
-
 // Get port from environment and store in Express
 var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);

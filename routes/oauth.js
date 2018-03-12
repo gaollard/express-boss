@@ -28,12 +28,21 @@ router.post('/register', (req, res) => {
  * @param pwd 密码
  */
 router.post('/login', async (req, res) => {
-  let {mobile, pwd} = req.body;
-  userModel.login({mobile, pwd: utils.md5Encode(pwd)}).then(data => {
-    res.json({code: '0', msg: '登录成功', data: {userInfo: data}});
-  }).catch(err => {
-    res.json({code: '1', msg: err, data: null});
-  });
+  let {mobile, pwd, type} = req.body;
+  let encodePwd = utils.md5Encode(pwd);
+  try {
+    let result = await userModel.login({mobile, pwd: encodePwd});
+    res.json({code: '0', msg: '登录成功', data: {userInfo: result}});
+  } catch (error) {
+    if (error.errType === 'user_not_register') {
+      try {
+        let result = await userModel.register({mobile, type, pwd: encodePwd});
+        res.json({code: '0', msg: '', data: {userInfo: result}});
+      } catch (error) {
+        res.json({code: '1', msg: error.msg, data: null});
+      }
+    }
+  }
 });
 
 /**
