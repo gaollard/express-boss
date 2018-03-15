@@ -88,4 +88,10 @@ module.exports = {
       })
     })
   },
+
+  // boss绑定公司
+  async bindCompany ({ userkey, companyId}) {
+    let ret = await redisHandle.getAsync(userkey);
+    return ret;
+  }
 };

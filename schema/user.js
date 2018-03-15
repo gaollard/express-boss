@@ -15,9 +15,14 @@ const userSchema = {
     default: ''
   },
   // genius职位
-  position: {
+  title: {
     type: String,
     default: ''
+  },
+  // boss所属公司
+  companyId: {
+    type: String,
+    default: '5aa7ee4a0ed6624c65b57661'
   }
 };
 module.exports = mongoose.model('user', new Schema(userSchema));

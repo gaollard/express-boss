@@ -29,9 +29,9 @@ const chatSchema = {
     default: false
   },
   // 创建时间
-  createTime: {
+  'createTime': {
     type: Number,
-    default: new Date().getTime()
+    default: new Date().getTime() + 2
   }
 };
 

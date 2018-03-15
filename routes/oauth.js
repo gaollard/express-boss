@@ -83,4 +83,14 @@ router.post('/update', async (req, res) => {
   }
 });
 
+/**
+ * boss绑定公司
+ * 1.验证当前用户是否为boss
+ */
+router.post('/bindCompany', async (req, res, next) => {
+  let { userkey, companyId } = req.body;
+  let data = await userModel.bindCompany({userkey, companyId});
+  res.json({'code': '0', 'msg': '', data: data});
+});
+
 module.exports = router;

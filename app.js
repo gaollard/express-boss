@@ -16,6 +16,8 @@ var oauth = require('./routes/oauth');
 var upload = require('./routes/upload');
 var chat = require('./routes/chat');
 var clear = require('./routes/clear');
+var company = require('./routes/company');
+var job = require('./routes/job');
 
 var app = express();
 
@@ -37,6 +39,8 @@ app.use('/users', users);
 app.use('/upload', upload);
 app.use('/chat', chat);
 app.use('/clear', clear);
+app.use('/company', company);
+app.use('/job', job);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
